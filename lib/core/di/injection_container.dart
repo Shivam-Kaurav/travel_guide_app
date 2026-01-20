@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:travel_guide_app/core/notifications/firebase_notification_service.dart';
+import 'package:travel_guide_app/core/notifications/notification_service.dart';
 import 'package:travel_guide_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:travel_guide_app/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:travel_guide_app/features/auth/domain/repository/auth_repository.dart';
@@ -27,6 +31,16 @@ Future<void> init() async {
   );
   serviceLocator.registerLazySingleton<FirebaseFirestore>(
     () => FirebaseFirestore.instance,
+  );
+  //core
+  serviceLocator.registerLazySingleton<FlutterLocalNotificationsPlugin>(
+    () => FlutterLocalNotificationsPlugin(),
+  );
+  serviceLocator.registerLazySingleton<FirebaseMessaging>(
+    () => FirebaseMessaging.instance,
+  );
+  serviceLocator.registerLazySingleton<NotificationService>(
+    () => FirebaseNotificationService(serviceLocator(), serviceLocator()),
   );
 
   ///Auth Feature

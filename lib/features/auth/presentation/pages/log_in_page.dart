@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_guide_app/core/di/injection_container.dart';
+import 'package:travel_guide_app/core/notifications/notification_service.dart';
 import 'package:travel_guide_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:travel_guide_app/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:travel_guide_app/features/auth/presentation/widgets/app_elevated_button.dart';
@@ -52,12 +54,16 @@ class _SignUpPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
+        final notificationService = serviceLocator<NotificationService>();
+
         if (state is AuthAuthenticated) {
+          notificationService.show(
+            title: 'Login successful',
+            body: 'Welcome back',
+          );
           Navigator.push(context, HomeScreen.route());
         } else if (state is AuthError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          notificationService.show(title: 'Login failes', body: state.message);
         }
       },
       builder: (context, state) {

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_guide_app/core/notifications/notification_service.dart';
 import 'package:travel_guide_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:travel_guide_app/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:travel_guide_app/features/destinations/presentation/bloc/destinations_bloc.dart';
@@ -12,6 +13,10 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await di.init();
+
+  //Initialize notifications once
+  await di.serviceLocator<NotificationService>().init();
+
   runApp(
     MultiBlocProvider(
       providers: [
