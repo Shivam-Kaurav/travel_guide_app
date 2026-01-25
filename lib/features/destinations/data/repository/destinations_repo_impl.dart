@@ -22,6 +22,7 @@ class DestinationsRepositoryImpl implements DestinationsRepository {
   Future<List<Destinations>> getDestinations() async {
     final firebaseData = await remoteDataSource.fetchDestinations();
 
+    // Keep dummy for DestinationsScreen
     return dummyPlaces.map((local) {
       final remote = firebaseData[local.id];
       return local.copyWith(
@@ -36,11 +37,18 @@ class DestinationsRepositoryImpl implements DestinationsRepository {
     final remote = await remoteDataSource.fetchDestinationById(id);
     final dummy = dummyPlaces.firstWhere((d) => d.id == id);
 
-    return dummy.copyWith(
-      country: remote.country.isNotEmpty ? remote.country : dummy.country,
-      description: remote.description.isNotEmpty
-          ? remote.description
-          : dummy.description,
+    // 🔹 Debug Firestore raw data
+    print('🔥 Repository fetchDestinationById for ID=$id');
+    print('Country: ${remote.country}');
+    print('Description: ${remote.description}');
+
+    return Destinations(
+      id: dummy.id,
+      name: dummy.name,
+      imageUrl: dummy.imageUrl,
+      imageList: dummy.imageList,
+      country: remote.country,
+      description: remote.description,
     );
   }
 }

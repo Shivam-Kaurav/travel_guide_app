@@ -5,6 +5,8 @@ class HomeScreenImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return SizedBox(
       height: 300,
       width: double.infinity,
@@ -13,6 +15,8 @@ class HomeScreenImage extends StatelessWidget {
         child: Image.network(
           'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
           fit: BoxFit.cover,
+          cacheWidth: screenWidth.toInt(),
+          cacheHeight: 300,
         ),
       ),
     );

@@ -80,6 +80,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Image.asset(
                         'assets/images/signup.png',
                         fit: BoxFit.cover,
+                        cacheWidth: 1025,
+                        cacheHeight: 683,
                       ),
                     ),
                     const SizedBox(height: 35),

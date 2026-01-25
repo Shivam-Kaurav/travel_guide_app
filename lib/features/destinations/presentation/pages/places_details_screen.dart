@@ -4,16 +4,16 @@ import 'package:travel_guide_app/features/destinations/domain/entities/destinati
 import 'package:travel_guide_app/features/destinations/presentation/bloc/destinations_bloc.dart';
 
 class PlacesDetailsScreen extends StatefulWidget {
-  final Destinations places;
+  final Destinations place;
 
-  static MaterialPageRoute route(Destinations places) => MaterialPageRoute(
+  static MaterialPageRoute route(Destinations place) => MaterialPageRoute(
     builder: (context) => BlocProvider.value(
       value: context.read<DestinationsBloc>(),
-      child: PlacesDetailsScreen(places: places),
+      child: PlacesDetailsScreen(place: place),
     ),
   );
 
-  const PlacesDetailsScreen({super.key, required this.places});
+  const PlacesDetailsScreen({super.key, required this.place});
 
   @override
   State<PlacesDetailsScreen> createState() => _PlacesDetailsScreenState();
@@ -24,11 +24,11 @@ class _PlacesDetailsScreenState extends State<PlacesDetailsScreen> {
   void initState() {
     super.initState();
 
-    // 🔹 Fetch Firebase data + merge with dummy
+    // Fire the event to fetch Firestore data
     context.read<DestinationsBloc>().add(
       FetchDestinationDetails(
-        id: widget.places.id,
-        dummyDestination: widget.places,
+        id: widget.place.id,
+        dummyDestination: widget.place,
       ),
     );
   }
@@ -36,16 +36,7 @@ class _PlacesDetailsScreenState extends State<PlacesDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<DestinationsBloc, DestinationsState>(
-          builder: (context, state) {
-            if (state is DestinationDetailsLoaded) {
-              return Text(state.destination.name); // Name stays dummy
-            }
-            return Text(widget.places.name); // Initial fallback
-          },
-        ),
-      ),
+      appBar: AppBar(title: const Text("Place Details")),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: BlocBuilder<DestinationsBloc, DestinationsState>(
@@ -57,53 +48,37 @@ class _PlacesDetailsScreenState extends State<PlacesDetailsScreen> {
             if (state is DestinationDetailsLoaded) {
               final destination = state.destination;
 
+              // 🔹 Debug prints in UI build
+              print('🔥 UI received DestinationDetailsLoaded');
+              print('Name: ${destination.name}');
+              print('Country: ${destination.country}');
+              print('Description: ${destination.description}');
+
               return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Name stays dummy
                     Text(
-                      destination.name,
+                      widget.place.name,
                       style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // Country from Firebase
+                    // Country from Firestore
                     Text(
                       destination.country,
                       style: const TextStyle(fontSize: 20, color: Colors.grey),
                     ),
                     const SizedBox(height: 20),
-                    // Description from Firebase
+                    // Description from Firestore
                     Text(
                       destination.description,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    // Images from dummy
-                    SizedBox(
-                      height: 220,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: destination.imageList.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                destination.imageList[index],
-                                fit: BoxFit.cover,
-                                width: 300,
-                              ),
-                            ),
-                          );
-                        },
                       ),
                     ),
                   ],
@@ -115,7 +90,8 @@ class _PlacesDetailsScreenState extends State<PlacesDetailsScreen> {
               return Center(child: Text(state.message));
             }
 
-            return const SizedBox();
+            // Initial loading fallback
+            return const Center(child: CircularProgressIndicator());
           },
         ),
       ),

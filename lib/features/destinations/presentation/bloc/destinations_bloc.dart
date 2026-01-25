@@ -27,6 +27,12 @@ class DestinationsBloc extends Bloc<DestinationsEvent, DestinationsState> {
       emit(DestinationsLoading());
       try {
         final destination = await getDestinationById(event.id);
+
+        // 🔹 Debug print to check what Firestore returned
+        print('🔥 Fetched from Firestore for ID=${event.id}');
+        print('Country: ${destination.country}');
+        print('Description: ${destination.description}');
+
         emit(DestinationDetailsLoaded(destination));
       } catch (e) {
         emit(DestinationsError(e.toString()));

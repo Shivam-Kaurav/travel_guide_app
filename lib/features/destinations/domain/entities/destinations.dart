@@ -18,10 +18,12 @@ class Destinations {
   Destinations copyWith({String? country, String? description}) {
     return Destinations(
       id: id,
-      country: country ?? this.country,
+      country: country != null && country.isNotEmpty ? country : this.country,
       name: name,
       imageUrl: imageUrl,
-      description: description ?? this.description,
+      description: description != null && description.isNotEmpty
+          ? description
+          : this.description,
       imageList: imageList,
     );
   }

@@ -23,7 +23,7 @@ class TouristPlacesList extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => BlocProvider.value(
                     value: context.read<DestinationsBloc>(),
-                    child: PlacesDetailsScreen(places: touristPlace),
+                    child: PlacesDetailsScreen(place: touristPlace),
                   ),
                 ),
               );

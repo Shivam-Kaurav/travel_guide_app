@@ -14,7 +14,8 @@ List<Destinations> dummyPlaces = [
       'https://picsum.photos/seed/taj_mahal_4/600/400',
       'https://picsum.photos/seed/taj_mahal_5/600/400',
     ],
-    description: 'no dummy data',
+    description:
+        ' Mahal was designated as a UNESCO World Heritage Site in 1983 for being "the jewel of Islamic art in India and one of the universally admired masterpieces of the worlds heritage. It is regarded as one of the best examples of Mughal architecture and a symbol of Indian history.',
   ),
   Destinations(
     id: 'eiffel_tower',

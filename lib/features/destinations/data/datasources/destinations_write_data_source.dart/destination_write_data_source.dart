@@ -10,8 +10,11 @@ class DestinationWriteDataSourceImpl implements DestinationWriteDataSource {
 
   @override
   Future<void> storeDestinations(List<Map<String, String>> data) async {
-    for (final destinations in data) {
-      await firestore.collection('destinations').add(destinations);
+    for (final destination in data) {
+      final id = destination['id']!;
+      // Use fixed doc ID instead of auto-generated
+      await firestore.collection('destinations').doc(id).set(destination);
+      print('Document stored for ID=$id');
     }
   }
 }
