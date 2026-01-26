@@ -1,14 +1,21 @@
-import 'package:travel_guide_app/features/destinations/domain/entities/destinations.dart';
-import 'package:travel_guide_app/features/destinations/domain/repository/destinations_repo.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:travel_guide_app/core/secrets.dart';
+import 'package:travel_guide_app/features/destinations/data/datasources/destinations_local_data_source/destinations_local_data_source.dart';
 import 'package:travel_guide_app/features/destinations/data/datasources/destinations_remote_data_source/destinations_remote_data_source.dart';
 import 'package:travel_guide_app/features/destinations/data/datasources/destinations_write_data_source.dart/destination_write_data_source.dart';
-import 'package:travel_guide_app/core/secrets.dart'; // for dummyPlaces
+import 'package:travel_guide_app/features/destinations/domain/entities/destinations.dart';
+import 'package:travel_guide_app/features/destinations/domain/repository/destinations_repo.dart';
 
 class DestinationsRepositoryImpl implements DestinationsRepository {
   final DestinationWriteDataSource writeDataSource;
   final DestinationsRemoteDataSource remoteDataSource;
+  final DestinationsLocalDataSource localDataSource;
 
-  DestinationsRepositoryImpl(this.writeDataSource, this.remoteDataSource);
+  DestinationsRepositoryImpl(
+    this.writeDataSource,
+    this.remoteDataSource,
+    this.localDataSource,
+  );
 
   @override
   Future<void> seedDestinations(List<Destinations> destinations) {
@@ -34,15 +41,19 @@ class DestinationsRepositoryImpl implements DestinationsRepository {
 
   @override
   Future<Destinations> getDestinationById(String id) async {
+    // Try hive first
+    final cached = await localDataSource.getDestinations(id);
+    if (cached != null) {
+      print('Loaded from hive');
+      return cached;
+    }
+    //fallback to firebase
+    print('fetching from firestore');
+
     final remote = await remoteDataSource.fetchDestinationById(id);
     final dummy = dummyPlaces.firstWhere((d) => d.id == id);
 
-    // 🔹 Debug Firestore raw data
-    print('🔥 Repository fetchDestinationById for ID=$id');
-    print('Country: ${remote.country}');
-    print('Description: ${remote.description}');
-
-    return Destinations(
+    final destination = Destinations(
       id: dummy.id,
       name: dummy.name,
       imageUrl: dummy.imageUrl,
@@ -50,5 +61,9 @@ class DestinationsRepositoryImpl implements DestinationsRepository {
       country: remote.country,
       description: remote.description,
     );
+    //save to hive
+    await localDataSource.cacheDestinations(destination);
+    print('saved to hive');
+    return destination;
   }
 }

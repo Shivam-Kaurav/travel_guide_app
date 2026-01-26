@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 import 'package:travel_guide_app/core/notifications/firebase_notification_service.dart';
 import 'package:travel_guide_app/core/notifications/notification_service.dart';
 import 'package:travel_guide_app/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -12,6 +13,7 @@ import 'package:travel_guide_app/features/auth/domain/usecases/login_usecase.dar
 import 'package:travel_guide_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:travel_guide_app/features/auth/domain/usecases/signup_usecase.dart';
 import 'package:travel_guide_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:travel_guide_app/features/destinations/data/datasources/destinations_local_data_source/destinations_local_data_source.dart';
 import 'package:travel_guide_app/features/destinations/data/datasources/destinations_remote_data_source/destinations_remote_data_source.dart';
 import 'package:travel_guide_app/features/destinations/data/datasources/destinations_write_data_source.dart/destination_write_data_source.dart';
 import 'package:travel_guide_app/features/destinations/data/repository/destinations_repo_impl.dart';
@@ -25,7 +27,7 @@ final serviceLocator = GetIt.instance;
 
 Future<void> init() async {
   ///External
-
+  serviceLocator.registerLazySingleton<Box>(() => Hive.box('destinations'));
   serviceLocator.registerLazySingleton<FirebaseAuth>(
     () => FirebaseAuth.instance,
   );
@@ -85,10 +87,17 @@ Future<void> init() async {
   serviceLocator.registerLazySingleton<DestinationWriteDataSource>(
     () => DestinationWriteDataSourceImpl(serviceLocator()),
   );
+  serviceLocator.registerLazySingleton<DestinationsLocalDataSource>(
+    () => DestinationsLocalDataSourceImpl(serviceLocator<Box>()),
+  );
 
   //Repositories
   serviceLocator.registerLazySingleton<DestinationsRepository>(
-    () => DestinationsRepositoryImpl(serviceLocator(), serviceLocator()),
+    () => DestinationsRepositoryImpl(
+      serviceLocator(),
+      serviceLocator(),
+      serviceLocator(),
+    ),
   );
 
   //use cases

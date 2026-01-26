@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:travel_guide_app/core/notifications/notification_service.dart';
 import 'package:travel_guide_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:travel_guide_app/features/auth/presentation/pages/sign_up_page.dart';
@@ -11,6 +12,10 @@ import 'core/di/injection_container.dart' as di;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //Initialize Hive
+  await Hive.initFlutter();
+  // open a box for destinations caching
+  await Hive.openBox('destinations');
 
   await di.init();
 
